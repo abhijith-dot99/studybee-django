@@ -1,8 +1,25 @@
 from django.shortcuts import redirect, render
 from django.db.models import Q
+from django.contrib import messages
 from .models import Room,Topic
 from .forms import roomform
 
+
+def loginpage(request):
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        try:
+            user = User.objects.get(username=username)
+        except:
+            messages.error(request,"user doesn't exist")
+    context ={}
+    return render(request,'app/login.html',context)
+
+
+      
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ' '
     rooms = Room.objects.filter(
@@ -11,7 +28,7 @@ def home(request):
         Q(desc__icontains=q))
         
     topics = Topic.objects.all()
-    context = {'rooms':rooms,'topics':topics}
+    context = {'rooms':rooms,'topics':topics }
     return render(request, 'app/home.html',context)
 
 def room(request, pk):
