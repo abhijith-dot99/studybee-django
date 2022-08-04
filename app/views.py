@@ -41,6 +41,17 @@ def logoutuser(request):
 
 def reguser(request):
     form = UserCreationForm()
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'unexpected error')
+
     return render(request, 'app/login.html',{'form':form})
       
 def home(request):
@@ -56,7 +67,8 @@ def home(request):
 
 def room(request, pk):
     room = Room.objects.get(id=pk)
-    context = {'room': room}
+    messages = room.message_set.all().order_by('-created')
+    context = {'room': room,'messages':messages}
     return render(request, 'app/room.html',context)
 
 @login_required(login_url='login')
