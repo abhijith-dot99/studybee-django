@@ -1,1 +1,1 @@
-"# socialmedia-django" 
+"# studybee-django" 
